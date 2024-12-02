@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      context: ./config-management-backend
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "${PORT}:5000"
+    environment:
+      - PORT=${PORT}
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_CACHE_EXPIRATION=${REDIS_CACHE_EXPIRATION}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "${REDIS_PORT}:6379"
+
+  frontend:
+    build:
+      context: ./config-management-frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_FIREBASE_API_KEY=${VITE_FIREBASE_API_KEY}
+      - VITE_FIREBASE_AUTH_DOMAIN=${VITE_FIREBASE_AUTH_DOMAIN}
+      - VITE_FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - VITE_FIREBASE_STORAGE_BUCKET=${VITE_FIREBASE_STORAGE_BUCKET}
+      - VITE_FIREBASE_MESSAGING_SENDER_ID=${VITE_FIREBASE_MESSAGING_SENDER_ID}
+      - VITE_FIREBASE_APP_ID=${VITE_FIREBASE_APP_ID}
+      - VITE_API_BASE_URL=http://localhost:5000/api
